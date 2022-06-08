@@ -1,0 +1,220 @@
+StateAbb,CCode,StateNme,Continent
+USA,2,United States of America,NA
+CAN,20,Canada,NA
+BHM,31,Bahamas,NA
+CUB,40,Cuba,NA
+HAI,41,Haiti,NA
+DOM,42,Dominican Republic,NA
+JAM,51,Jamaica,NA
+TRI,52,Trinidad and Tobago,NA
+BAR,53,Barbados,NA
+DMA,54,Dominica,NA
+GRN,55,Grenada,NA
+SLU,56,St. Lucia,NA
+SVG,57,St. Vincent and the Grenadines,NA
+AAB,58,Antigua & Barbuda,NA
+SKN,60,St. Kitts and Nevis,NA
+MEX,70,Mexico,NA
+BLZ,80,Belize,NA
+GUA,90,Guatemala,NA
+HON,91,Honduras,NA
+SAL,92,El Salvador,NA
+NIC,93,Nicaragua,NA
+COS,94,Costa Rica,NA
+PAN,95,Panama,NA
+COL,100,Colombia,SA
+VEN,101,Venezuela,SA
+GUY,110,Guyana,SA
+SUR,115,Suriname,SA
+ECU,130,Ecuador,SA
+PER,135,Peru,SA
+BRA,140,Brazil,SA
+BOL,145,Bolivia,SA
+PAR,150,Paraguay,SA
+CHL,155,Chile,SA
+ARG,160,Argentina,SA
+URU,165,Uruguay,SA
+UKG,200,United Kingdom,EU
+IRE,205,Ireland,EU
+NTH,210,Netherlands,EU
+BEL,211,Belgium,EU
+LUX,212,Luxembourg,EU
+FRN,220,France,EU
+FRN,220,France,EU
+MNC,221,Monaco,EU
+LIE,223,Liechtenstein,EU
+SWZ,225,Switzerland,EU
+SPN,230,Spain,EU
+AND,232,Andorra,EU
+POR,235,Portugal,EU
+HAN,240,Hanover,EU
+BAV,245,Bavaria,EU
+GMY,255,Germany,EU
+GFR,260,German Federal Republic,EU
+GDR,265,German Democratic Republic,EU
+BAD,267,Baden,EU
+SAX,269,Saxony,EU
+WRT,271,Wuerttemburg,EU
+HSE,273,Hesse Electoral,EU
+HSG,275,Hesse Grand Ducal,EU
+MEC,280,Mecklenburg Schwerin,EU
+POL,290,Poland,EU
+AUH,300,Austria-Hungary,EU
+AUS,305,Austria,EU
+HUN,310,Hungary,EU
+CZE,315,Czechoslovakia,EU
+CZR,316,Czech Republic,EU
+SLO,317,Slovakia,EU
+ITA,325,Italy,EU
+PAP,327,Papal States,EU
+SIC,329,Two Sicilies,EU
+SNM,331,San Marino,EU
+MOD,332,Modena,EU
+PMA,335,Parma,EU
+TUS,337,Tuscany,EU
+MLT,338,Malta,EU
+ALB,339,Albania,EU
+MNG,341,Montenegro,EU
+MAC,343,Macedonia,EU
+CRO,344,Croatia,EU
+YUG,345,Yugoslavia,EU
+BOS,346,Bosnia and Herzegovina,EU
+KOS,347,Kosovo,EU
+SLV,349,Slovenia,EU
+GRC,350,Greece,EU
+CYP,352,Cyprus,EU
+BUL,355,Bulgaria,EU
+MLD,359,Moldova,EU
+ROM,360,Romania,EU
+RUS,365,Russia,EU
+EST,366,Estonia,EU
+LAT,367,Latvia,EU
+LIT,368,Lithuania,EU
+UKR,369,Ukraine,EU
+BLR,370,Belarus,EU
+ARM,371,Armenia,EU
+GRG,372,Georgia,EU
+AZE,373,Azerbaijan,EU
+FIN,375,Finland,EU
+SWD,380,Sweden,EU
+NOR,385,Norway,EU
+DEN,390,Denmark,EU
+ICE,395,Iceland,EU
+CAP,402,Cape Verde,AF
+STP,403,Sao Tome and Principe,AF
+GNB,404,Guinea-Bissau,AF
+EQG,411,Equatorial Guinea,AF
+GAM,420,Gambia,AF
+MLI,432,Mali,AF
+SEN,433,Senegal,AF
+BEN,434,Benin,AF
+MAA,435,Mauritania,AF
+NIR,436,Niger,AF
+CDI,437,Ivory Coast,AF
+GUI,438,Guinea,AF
+BFO,439,Burkina Faso,AF
+LBR,450,Liberia,AF
+SIE,451,Sierra Leone,AF
+GHA,452,Ghana,AF
+TOG,461,Togo,AF
+CAO,471,Cameroon,AF
+NIG,475,Nigeria,AF
+GAB,481,Gabon,AF
+CEN,482,Central African Republic,AF
+CHA,483,Chad,AF
+CON,484,Congo,AF
+DRC,490,Democratic Republic of the Congo,AF
+UGA,500,Uganda,AF
+KEN,501,Kenya,AF
+TAZ,510,Tanzania,AF
+ZAN,511,Zanzibar,AF
+BUI,516,Burundi,AF
+RWA,517,Rwanda,AF
+SOM,520,Somalia,AF
+DJI,522,Djibouti,AF
+ETH,530,Ethiopia,AF
+ERI,531,Eritrea,AF
+ANG,540,Angola,AF
+MZM,541,Mozambique,AF
+ZAM,551,Zambia,AF
+ZIM,552,Zimbabwe,AF
+MAW,553,Malawi,AF
+SAF,560,South Africa,AF
+NAM,565,Namibia,AF
+LES,570,Lesotho,AF
+BOT,571,Botswana,AF
+SWA,572,Swaziland,AF
+MAG,580,Madagascar,AF
+COM,581,Comoros,AF
+MAS,590,Mauritius,AF
+SEY,591,Seychelles,AF
+MOR,600,Morocco,AF
+ALG,615,Algeria,AF
+TUN,616,Tunisia,AF
+LIB,620,Libya,AF
+SUD,625,Sudan,AF
+SSD,626,South Sudan,AF
+IRN,630,Iran,AS
+TUR,640,Turkey,AS
+IRQ,645,Iraq,AS
+EGY,651,Egypt,AS
+SYR,652,Syria,AS
+LEB,660,Lebanon,AS
+JOR,663,Jordan,AS
+ISR,666,Israel,AS
+SAU,670,Saudi Arabia,AS
+YAR,678,Yemen Arab Republic,AS
+YEM,679,Yemen,AS
+YPR,680,Yemen People's Republic,AS
+KUW,690,Kuwait,AS
+BAH,692,Bahrain,AS
+QAT,694,Qatar,AS
+UAE,696,United Arab Emirates,AS
+OMA,698,Oman,AS
+AFG,700,Afghanistan,AS
+TKM,701,Turkmenistan,AS
+TAJ,702,Tajikistan,AS
+KYR,703,Kyrgyzstan,AS
+UZB,704,Uzbekistan,AS
+KZK,705,Kazakhstan,AS
+CHN,710,China,AS
+MON,712,Mongolia,AS
+TAW,713,Taiwan,AS
+KOR,730,Korea,AS
+PRK,731,North Korea,AS
+ROK,732,South Korea,AS
+JPN,740,Japan,AS
+JPN,740,Japan,AS
+IND,750,India,AS
+BHU,760,Bhutan,AS
+PAK,770,Pakistan,AS
+BNG,771,Bangladesh,AS
+MYA,775,Myanmar,AS
+SRI,780,Sri Lanka,AS
+MAD,781,Maldives,AS
+NEP,790,Nepal,AS
+THI,800,Thailand,AS
+CAM,811,Cambodia,AS
+LAO,812,Laos,AS
+DRV,816,Vietnam,AS
+RVN,817,Republic of Vietnam,AS
+MAL,820,Malaysia,AS
+SIN,830,Singapore,AS
+BRU,835,Brunei,AS
+PHI,840,Philippines,AS
+INS,850,Indonesia,AS
+ETM,860,East Timor,AS
+AUL,900,Australia,AU
+PNG,910,Papua New Guinea,AU
+NEW,920,New Zealand,AU
+VAN,935,Vanuatu,AU
+SOL,940,Solomon Islands,AU
+KIR,946,Kiribati,AU
+TUV,947,Tuvalu,AU
+FIJ,950,Fiji,AU
+TON,955,Tonga,AU
+NAU,970,Nauru,AU
+MSI,983,Marshall Islands,AU
+PAL,986,Palau,AU
+FSM,987,Federated States of Micronesia,AU
+WSM,990,Samoa,AU
