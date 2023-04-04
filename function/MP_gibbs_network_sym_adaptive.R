@@ -4,8 +4,9 @@ distance_squared_inner_prod = function(mu1,mu2,Sigma1,Sigma2){
   return(value)
 }
 
+# Core function to perform group_wise fused shirnkage for a single subject, all other functions, like Gaussian matrix factorization, binary network and tensor models will use this function iteratively
 
-MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =1, max_iter=2000, X_init = NULL,alpha = 0.95, d=2,mean_beta_prior=0,
+MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_init = NULL,alpha = 0.95, d=2,mean_beta_prior=0,
                                        sigma_beta_prior=sqrt(10),global_prior='Cauthy'){
   
   tau = 1/tau^2
@@ -26,7 +27,7 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =1, max_iter=2000, X_init
   Sigma_X = replicate(n=n, expr=list()); # covariance matrix of X, Sigma_x[[t]][[i]] is the covariance matrix Sigma_{it}
   
   for (i in 1:n){
-    Mean_X[[i]] = matrix(rnorm(T*d),nrow = T)
+    Mean_X[[i]] = 0.1*matrix(rnorm(T*d),nrow = T)
     Sigma_X[[i]] = vector("list", T)
     for (t in 1:T){
       Sigma_X[[i]][[t]] =  0*diag(d)          # initialization for Sigma_{it}
@@ -168,7 +169,12 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =1, max_iter=2000, X_init
       #                                  init_Mean=Mean_X[[i]], init_Sigma = Sigma_X[[i]],  gap = 1e-6)
       
       MF_gibbs =  MP_gibbs_mult_Sigma (Y = M_X_cumulative[[i]], Sigma_list = V_X_cumulative[[i]], tau=tau,  max_iter = 100, 
-                                         gap = 1e-3, global_prior=global_prior)
+                                         gap = 1e-4, global_prior=global_prior)
+      
+#      MF_m = MF_gibbs$Mean
+      
+#      MF_m [MF_m>10] =10
+#      MF_m [MF_m<-10] = -10
       
       Mean_X_new[[i]] = MF_gibbs$Mean
       
@@ -199,7 +205,7 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =1, max_iter=2000, X_init
      
 
     
-    if((abs(err[k]-err[k-1]) <  gap || k>max_iter+1)){
+    if( (err[k]-err[k-1] < gap)  || k>max_iter+1){
       ind = 1
     }    else{
       

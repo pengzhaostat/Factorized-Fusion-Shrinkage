@@ -1,3 +1,30 @@
+#----------------------------------------------------------------------------
+# Gaussian matrix factorization via SMF variational inference
+# Input Variables:
+
+# Y: Observed values, list of length T, Y[[t]]: n*p matrix values at time point t
+# mean_beta_prior,sigma_beta_prior: mean and sd for prior of beta
+# gap_per_iter: gap between errors for convergence
+# max_iter: maximal cycles in computation
+# alpha: fractional power of the likelihood, fixed to be 0.95 in this paper
+# global_prior: types of global_prior, Cauthy, fixed or Gamma
+# type: types of observations, full, off-diagonal
+
+#Output variables:
+# err: dynamic of the training RMSE
+# Mean_X: variational mean of each subject of X, list of length T, Mean_X[[t]]: n*d matrix at time point t
+# Sigma_X: variational covariance matrix of each subject of X
+# Mean_Z: variational mean of each subject of Z
+# Sigma_Z: variational covariance matrix of each subject of Z
+# mean_beta: variational mean of intercept beta
+# sigma_beta: variational sd of intercept beta 
+# iter: k-1
+# tau_1: means of global_prior of X
+# tau_2: means of global_prior of Z
+# lambda_X: means of local prior of X
+# lambda_Z: means of local prior of Z
+
+
 MP_Gaussain_weighted_adaptive = function(Y,tau=0.01, sigma=0.5 , gap =1e-6, max_iter=20, X_init = NULL, 
                                 alpha=0.95, d=2,mean_beta_prior=0, sigma_beta_prior=10, type = 'full',
                                 global_prior=global_prior,gap_per_iter=1e-3){

@@ -15,17 +15,34 @@ source('mix_DN_adaptive_invgamma.R')
 source('helper.R')
 setwd(file_location)
 
-trend_generate = function(T,d,sigma_0,p){
+# trend_generate = function(T,d,sigma_0,p){
+#   X = matrix(rep(0,T*d),nrow = T)
+#   initial_components = sample(1:2,prob=c(0.5,0.5),size=1, replace=TRUE)
+#   initial_mean <- matrix(c(-1,0,1,0), nrow=2)
+#   X[1,] = rnorm(n=1, mean = initial_mean[,initial_components], sd = rep(sigma_0,d) )
+#   for (t in 2:T) {
+#     increment = rep(sample(c(0,1),prob = c(p,1-p),size=1),d)
+#     X[t,] <- X[t-1,]+increment*sign(runif(d,-1,1))
+#   }
+#   return(X)
+# }
+
+binary_generate = function(T,d,prob){
   X = matrix(rep(0,T*d),nrow = T)
-  initial_components = sample(1:2,prob=c(0.5,0.5),size=1, replace=TRUE)
-  initial_mean <- matrix(c(-1,0,1,0), nrow=2)
-  X[1,] = rnorm(n=1, mean = initial_mean[,initial_components], sd = rep(sigma_0,d) )
+  X[1,] <- rbinom(n=d,size=1,prob=0.5)
   for (t in 2:T) {
-    increment = rep(sample(c(0,1),prob = c(p,1-p),size=1),d)
-    X[t,] <- X[t-1,]+increment*sign(runif(d,-1,1))
+    increment = rbinom(n=1,size=1,prob=(prob-1/(2^d))/(1-1/(2^d)))
+    if (increment == 1){
+      X[t,] <- X[t-1,]
+    } else{
+      X[t,] <- rbinom(n=d,size=1,prob=0.5)
+    }
   }
+  X[X==0] = -1
   return(X)
 }
+
+
 
 
 positions_to_edges_binary = function(X,beta,sigma,t){
@@ -35,7 +52,7 @@ positions_to_edges_binary = function(X,beta,sigma,t){
     for(j in 1:n){
       if(j > i)
       {
-        edge_mat[j,i] = rbinom(n=1, size=1, prob=1/(1+exp(-beta-t(X[[i]][t,])%*%X[[j]][t,])))
+        edge_mat[j,i] = rbinom(n=1, size=1, prob=1/(1+exp(-beta*t(X[[i]][t,])%*%X[[j]][t,])))
       }
     }
   }
@@ -44,28 +61,39 @@ positions_to_edges_binary = function(X,beta,sigma,t){
 }
 #--------------------------------Data Generation---------------------
 
-n = 10  
+n = 20  
 
 T = 100
 
 rho = 1
 
-beta = 0 # 
-
 d = 2   # dimension for the latent vectors, d = 2 for better visualization
 
 sigma = 0.2
 
+prob = 0.99
+
+beta = 3
+
 
 X <- vector("list", n)
 
-X[[1]] = trend_generate(T,d,sigma,p=0.5)
+for ( i in 1:2){
+  X[[i]] = binary_generate(T,d,prob=prob)
+}
 
-X[[2]] = trend_generate(T,d,sigma,p=0.5)
+
+# X <- vector("list", n)
+# 
+# X[[1]] = trend_generate(T,d,sigma,p=0.5)
+# 
+# X[[2]] = trend_generate(T,d,sigma,p=0.5)
 
 
 for ( i in 3:n){
-  X[[i]] = trend_generate(T,d,sigma,p=1)
+ # X[[i]] = trend_generate(T,d,sigma,p=1)
+  
+  X[[i]] = binary_generate(T,d,prob=1)
 
 }
 
@@ -131,11 +159,54 @@ for (i in 1:n){
  
  
  par(mfrow=c(2,3))
- par(mar=rep(2,4))
+ par(mar=rep(3,4))
+
+
+ plot_clus_igraph(Xm[[1]],Y[[1]],c(rep(2,2),rep(1,n-2)),1,1:n,v_shape='square')
+ mtext('IGLSM', side=2)
+ plot_clus_igraph(Xm[[50]],Y[[50]],c(rep(2,2),rep(1,n-2)),50,1:n,v_shape='square')
+ plot_clus_igraph(Xm[[100]],Y[[100]],c(rep(2,2),rep(1,n-2)),100,1:n,v_shape='square')
  
- plot_clus_igraph(Xm[[1]],Y[[1]],c(rep(2,2),rep(1,n-2)),1,1:n)
- plot_clus_igraph(Xm[[50]],Y[[50]],c(rep(2,2),rep(1,n-2)),50,1:n)
- plot_clus_igraph(Xm[[100]],Y[[100]],c(rep(2,2),rep(1,n-2)),100,1:n)
- plot_clus_igraph(Xm2[[1]],Y[[1]],c(rep(2,2),rep(1,n-2)),1,1:n)
- plot_clus_igraph(Xm2[[50]],Y[[50]],c(rep(2,2),rep(1,n-2)),50,1:n)
- plot_clus_igraph(Xm2[[100]],Y[[100]],c(rep(2,2),rep(1,n-2)),100,1:n)
+ 
+ plot_clus_igraph(Xm2[[1]],Y[[1]],c(rep(2,2),rep(1,n-2)),1,1:n,v_shape='circle')
+ mtext('FFS', side=2)
+ plot_clus_igraph(Xm2[[50]],Y[[50]],c(rep(2,2),rep(1,n-2)),50,1:n,v_shape='circle')
+ plot_clus_igraph(Xm2[[100]],Y[[100]],c(rep(2,2),rep(1,n-2)),100,1:n,v_shape='circle')
+
+ 
+ Xt = vector("list", T)
+ for(t in 1:T){
+   Xt [[t]] =matrix(rep(0,n*d),nrow=n)
+   for (i in 1:n){
+     Xt [[t]][i,] = X[[i]][t,]
+   }
+ }
+
+ heat_matrix = matrix(rep(0,3*n*(T-1)),ncol=T-1)
+
+ for (t in 2:T){
+   heat_matrix[,t-1]= as.vector(c(sqrt(rowSums((Xm[[t]]-Xm[[t-1]])^2)),sqrt(rowSums((Xm2[[t]]-Xm2[[t-1]])^2)),
+                                  sqrt(rowSums((Xt[[t]]-Xt[[t-1]])^2))))
+ }
+
+
+
+
+ library(ggplot2)
+ library(tidyr)
+ library(tibble)
+ library(dplyr)
+
+ dev.new()
+
+ df_plot = heat_matrix%>%
+   as_tibble() %>%
+   rowid_to_column(var="Index0") %>%
+   gather(key="t", value="Value", -1) %>%
+   mutate(t=as.numeric(gsub("V","",t)))
+
+ df_plot$method = rep(c(rep('IGLSM',n),rep('FSS',n),rep('Truth',n)),T-1)
+ df_plot$Index = factor(rep(1:n,3*(T-1)))
+
+ ggplot(df_plot, aes(Index, t, fill= Value)) + facet_wrap(vars(method))+
+   geom_tile()+ scale_fill_gradient(low="white", high="blue")+ theme(text = element_text(size = 16))

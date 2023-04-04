@@ -4,6 +4,9 @@ distance_squared_inner_prod = function(mu1,mu2,Sigma1,Sigma2){
   return(value)
 }
 
+#----------------------------------------------------------------------------
+# Binary matrix factorization via SMF variational inference
+
 
 MP_binary_weighted_adaptive = function(Y,tau=1, gap =1, max_iter=2000, X_init = NULL,alpha = 0.95, d=2,mean_beta_prior, sigma_beta_prior,
                                        global_prior='Cauthy',gap_per_iter=1e-2){

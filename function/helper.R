@@ -1,12 +1,13 @@
 # Some helper functions
 
 
-
 procrustes_r <- function(A, B, normalize=F ){
   # center and normalize A 
   # A.centered <- t(scale(t(A), center = TRUE, scale = FALSE))
   A.size <- norm(A, type = "F") 
-  A.normalized <- A
+  if (normalize == T){
+    A.normalized <- A /A.size
+  } else {A.normalized <- A }
   # 
   # # center and normalize B
   # B.centered <- t(scale(t(B), center = TRUE, scale = FALSE))
@@ -25,7 +26,7 @@ procrustes_r <- function(A, B, normalize=F ){
   B.transformed <- T %*% B.normalized
   
   # Error after superimposition
-  RSS <- norm(A.normalized - B.normalized,  type = "F")
+  RSS <- norm(A.normalized - B.transformed,  type = "F")
   
   # Return
   return(list(rotation.mtx = T, B.transformed = B.transformed, RSS = RSS))
@@ -116,7 +117,7 @@ plot_clus = function(Xm1,Y1,clus,t){
   return( g_plot)
 }
 
-plot_clus_igraph = function(Xm1,Y1,clus,t,label,NA_ind){
+plot_clus_igraph = function(Xm1,Y1,clus,t,label,NA_ind,v_shape=NULL){
   n = length(Xm1[,1])
   diag(Y1) = 0
   Y1[lower.tri(Y1, diag = FALSE)] = 0
@@ -125,33 +126,103 @@ plot_clus_igraph = function(Xm1,Y1,clus,t,label,NA_ind){
   Edge_list = igraph::as_data_frame	(igraph::graph_from_adjacency_matrix(Y1,mode="undirected"),'edge')
  # pal <- RColorBrewer::brewer.pal(12,"Paired")
   pal <- RColorBrewer::brewer.pal(8,"Accent")
+  pal[c(1,4)] =pal[c(4,1)]
   vertex.col = pal[factor(clus)]
   vertex.col[is.na(label)]=adjustcolor("white", alpha.f = 0)
+  if (!is.null(v_shape)){
+    v_shape = v_shape
+  } else {
   v_shape= setdiff(igraph::shapes(), "")[c(1,1)]
-  v_size = c(20)
+  }
+  v_size = c(15)
   a<- igraph::graph_from_data_frame(vertices = NodeList, d= Edge_list, directed = FALSE)
+#  v_size = degree(a)
   igraph::plot.igraph(a,vertex.color=vertex.col,vertex.shape=v_shape[1], vertex.label=label,vertex.size=v_size,
                       edge.arrow.size=0.001,vertex.label.cex =1,vertex.label.color = "black"  ,vertex.frame.color = adjustcolor("black", alpha.f = 0),
             vertex.color = adjustcolor("white", alpha.f = 0),edge.color=adjustcolor("pink", alpha.f = 1),display.isolates=FALSE,xlim=c(-1,1),ylim=c(-1,1), asp = 0)
   #  title(main=paste("t =",t,sep = ' '),cex.main=1.5)
   #  legend('topleft',legend=levels(factor(clus)),pch=c(1,0),bty = "n",cex=1.6)
- legend('bottom',inset = c(0, -.1),legend=paste("t =",t,sep = ' '),cex = 1.5,bty = "n")
+ legend('bottom',inset = c(0, -.2),legend=paste("t =",t,sep = ' '),cex = 1.5,bty = "n")
   return( NULL)
 }
 
 
-plot_clus_igraph_sub = function(Xm1,Y1,clus,t,label,axis_lim){
+
+plot_clus_igraph_sub_8 = function(Xm1,Y1,clus,t,label,axis_lim){
   NA_ind = which(is.na(label))
   Xm1 = Xm1[-NA_ind,]
   Y1= Y1[-NA_ind,-NA_ind]
   
   pal <- RColorBrewer::brewer.pal(8,"Accent")
+  shap = names(igraph:::.igraph.shapes)
+  pal[c(1,2)] = pal[c(2,1)]
   vertex.col_full = pal[factor(clus)]
-
+  
+  v_shape= shap[factor(clus)]
+  
   clus=clus[-NA_ind]
   label = label[-NA_ind]
   
   vertex.col=vertex.col_full[-NA_ind]
+  
+  v_shape = v_shape[-NA_ind]
+  
+  n = length(Xm1[,1])
+  diag(Y1) = 0
+  Y1[lower.tri(Y1, diag = FALSE)] = 0
+  NodeList <- data.frame((1:n), x=Xm1[,1] ,y=Xm1[,2])
+  #    Edge_list = data.frame(matrix(ncol = 2, nrow = 0))
+  Edge_list = igraph::as_data_frame	(igraph::graph_from_adjacency_matrix(Y1,mode="undirected"),'edge')
+  
+  
+  # v_shape= setdiff(igraph::shapes(), "")[c(1,1)]
+  
+  v_size = c(20)
+  a<- igraph::graph_from_data_frame(vertices = NodeList, d= Edge_list, directed = FALSE)
+  igraph::plot.igraph(a,vertex.shape="circle",vertex.color=vertex.col, vertex.label=label,vertex.size=v_size,
+                      edge.arrow.size=0.001,vertex.label.cex = 0.7,vertex.label.color = adjustcolor("black", alpha.f = 1) ,vertex.frame.color = adjustcolor("white", alpha.f = 0),
+                      edge.color=adjustcolor("pink", alpha.f = 1),rescale=F,axes = T,
+                      xlim=c(axis_lim[1],axis_lim[2]),ylim=c(axis_lim[3],axis_lim[4]), asp = 0,
+                      vertex.label.degree = -pi/2)
+  #  title(main=paste("t =",t,sep = ' '),cex.main=1.5)
+  #  legend('topleft',legend=levels(factor(clus)),pch=c(1,0),bty = "n",cex=1.6)
+  legend('top',inset = c(0, -0.1),legend=paste("year =",t,sep = ' '),cex = 1.5,bty = "n")
+  return( NULL)
+}
+
+
+plot_clus_igraph_sub = function(Xm1,Y1,clus,t,label,axis_lim,data_name){
+  NA_ind = which(is.na(label))
+  Xm1 = Xm1[-NA_ind,]
+  Y1= Y1[-NA_ind,-NA_ind]
+  
+  pal <- RColorBrewer::brewer.pal(8,"Accent")
+  pal[c(1,2)] =pal[c(2,1)]
+  vertex.col = pal[factor(clus)]
+  vertex.col[is.na(label)]=adjustcolor("white", alpha.f = 0)
+  shap = names(igraph:::.igraph.shapes)
+  
+  vertex.col_full = pal[factor(clus)]
+  shap=shap[-7]
+  v_shape= shap[factor(clus)]
+
+  # shap[2] ='triangle'
+  # shap[3] ='star'
+  # shap[4] =shap[8]
+  # shap[5] =shap[8]
+  # shap[6] =shap[8]
+  # shap[7] =shap[8]
+  
+  clus=clus[-NA_ind]
+  
+  
+  label[-data_name] =NA
+  
+  label = label[-NA_ind]
+  
+  vertex.col=vertex.col_full[-NA_ind]
+  
+  v_shape = v_shape[-NA_ind]
   
   n = length(Xm1[,1])
   diag(Y1) = 0
@@ -161,16 +232,19 @@ plot_clus_igraph_sub = function(Xm1,Y1,clus,t,label,axis_lim){
   Edge_list = igraph::as_data_frame	(igraph::graph_from_adjacency_matrix(Y1,mode="undirected"),'edge')
   
 
-  v_shape= setdiff(igraph::shapes(), "")[c(1,1)]
-  v_size = c(40)
+ # v_shape= setdiff(igraph::shapes(), "")[c(1,1)]
+v_size= 20
+
   a<- igraph::graph_from_data_frame(vertices = NodeList, d= Edge_list, directed = FALSE)
-  igraph::plot.igraph(a,vertex.shape=v_shape[1],vertex.color=vertex.col, vertex.label=label,vertex.size=v_size,
-                      edge.arrow.size=0.001,vertex.label.cex = 1.5,vertex.label.color = adjustcolor("black", alpha.f = 1) ,vertex.frame.color = adjustcolor("white", alpha.f = 0),
+#  v_size = degree(a)
+  igraph::plot.igraph(a,vertex.shape="circle",vertex.color=vertex.col, vertex.label=label,vertex.size=v_size,
+                      edge.arrow.size=0.001,vertex.label.cex = 0.7,vertex.label.color = adjustcolor("black", alpha.f = 1) ,vertex.frame.color = adjustcolor("white", alpha.f = 0),
                       edge.color=adjustcolor("pink", alpha.f = 1),rescale=F,axes = T,
-                      xlim=c(axis_lim[1],axis_lim[2]),ylim=c(axis_lim[3],axis_lim[4]), asp = 0)
+                      xlim=c(axis_lim[1],axis_lim[2]),ylim=c(axis_lim[3],axis_lim[4]), asp = 0,
+                      vertex.label.degree = -pi/2)
   #  title(main=paste("t =",t,sep = ' '),cex.main=1.5)
   #  legend('topleft',legend=levels(factor(clus)),pch=c(1,0),bty = "n",cex=1.6)
-  legend('top',inset = c(0, -0.1),legend=paste("year =",t,sep = ' '),cex = 2.5,bty = "n")
+  legend('top',inset = c(0, -0.1),legend=paste("year =",t,sep = ' '),cex = 1,bty = "n")
   return( NULL)
 }
 
@@ -180,12 +254,13 @@ plot_sub_preprocess = function(Xm,Y,t1,t2,data_label){
   x_max = 0
   y_min = 0
   y_max = 0
+  non_NA_ind = union(non_NA_ind, which(!is.na(data_label)))
   for (t in t1:t2){
-    non_NA_ind = union(non_NA_ind, which(apply(Y[[t]],1,sum)!=0))
-    x_min =min(x_min,min(Xm[[t]][,1]-0.5))
-    x_max =max(x_max,max(Xm[[t]][,1]+0.5))
-    y_min =min(y_min,min(Xm[[t]][,2]-0.5))
-    y_max =max(y_max,max(Xm[[t]][,2]+0.5))
+  #  non_NA_ind = union(non_NA_ind, which(apply(Y[[t]],1,sum)!=0))
+    x_min =min(x_min,min(Xm[[t]][non_NA_ind,1])-0.2)
+    x_max =max(x_max,max(Xm[[t]][non_NA_ind,1])+0.2)
+    y_min =min(y_min,min(Xm[[t]][non_NA_ind,2])-0.2)
+    y_max =max(y_max,max(Xm[[t]][non_NA_ind,2])+0.2)
   }
   axis_lim = c(x_min,x_max,y_min,y_max)
   label.plot_non_NA = rep(NA,n)

@@ -1,4 +1,5 @@
 library(Bessel)
+library(invgamma)
 
 MP_gibbs_mult_Sigma =  function(Y, init_sigma_X1=NULL, Sigma_list, tau =1, max_iter, init_Mean = NULL, init_Sigma = NULL,
                                 init_lambda = NULL,gap =1e-6, global_prior='Cauthy',X_true =NULL){
@@ -156,7 +157,6 @@ MP_gibbs_mult_Sigma =  function(Y, init_sigma_X1=NULL, Sigma_list, tau =1, max_i
     
     for( t in 1:(T-1)){
       lambda[t] =(d+1)/2/(v[t] + EX[t]*tau/2)
- #     lambda[t] = besselK(x=sqrt(EX[t]*lambda[t]),nu=1)/besselK(x=sqrt(EX[t]*lambda[t]),nu=0)/sqrt(EX[t]*lambda[t])
     }
     
     if (global_prior =='Gamma'){
@@ -170,8 +170,14 @@ MP_gibbs_mult_Sigma =  function(Y, init_sigma_X1=NULL, Sigma_list, tau =1, max_i
       
       tau = (d*(T-1)/2+1/2)/(v0+b/2)
       
-    } else if (global_prior =='fixed'){
-      tau = 1000
+    }else if (global_prior =='Uniform'){
+      
+      invgamma_sample = rgamma(n=1000,shape= d*(T-1)/2,rate=b/2)
+
+      tau = mean(invgamma_sample[invgamma_sample>1])
+      
+    }    else if (global_prior =='fixed'){
+      tau = 100
     }
     
     sg_inve_sq = (d+1)/(b0+1)
@@ -179,7 +185,7 @@ MP_gibbs_mult_Sigma =  function(Y, init_sigma_X1=NULL, Sigma_list, tau =1, max_i
     sigma_X1 = sqrt(1/sg_inve_sq)
     
     
-    # cat(tau,'\n')
+  #   cat(tau,'\n')
     
     
     err[k]=sqrt(sum((X_Mean-Y)^2/T))

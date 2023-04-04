@@ -1,4 +1,4 @@
-# https://rpubs.com/leexiner/bigdata-exercise06
+# code for proximal gradient comes from  https://rpubs.com/leexiner/bigdata-exercise06
 
 
 # Negative log likelihood function
