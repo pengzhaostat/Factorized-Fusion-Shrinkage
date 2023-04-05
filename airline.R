@@ -264,10 +264,10 @@ data_date_2 = as.Date(rep(myDate[time_index],T_len))
 data_plot_heat = as.data.frame(list(date_1=data_date_1,date_2= data_date_2,dist=data_dist, prob_diff = data_dist_prob,
                                     carrier=rep(carrier0[1:n_length],each=T_len*T_len)))
 
-ggplot(data_plot_heat, aes(date_1, date_2, fill= dist)) + 
-  facet_wrap(~carrier,scales='free')+scale_x_date(date_labels = "%Y")+
-  scale_fill_gradient(low="blue", high="red") +
-  geom_tile()
+# ggplot(data_plot_heat, aes(date_1, date_2, fill= dist)) + 
+#   facet_wrap(~carrier,scales='free')+scale_x_date(date_labels = "%Y")+
+#   scale_fill_gradient(low="blue", high="red") +
+#   geom_tile()
 
 
 
