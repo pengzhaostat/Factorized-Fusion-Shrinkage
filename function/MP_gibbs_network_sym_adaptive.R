@@ -183,7 +183,7 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_i
       sigma_0_X[i] = MF_gibbs$sigma_X1
       
     }
-    
+ 
 
     
     pred_mean = rep(T*n*n,0)
@@ -223,9 +223,9 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_i
       
       k = k+1
     }
- 
+    
   }
-  
+  tau = MF_gibbs$tau
   return(list(norm = norm_stop[2:(k-1)], Mean_X= Mean_X, Sigma_X= Sigma_X, iter = k-1, 
-              tau=tau,lambda_X =lambda_X, mean_beta=mean_beta,sigma_beta=sigma_beta, sigma_0_X = sigma_0_X))
+              tau=tau,lambda_X =lambda_X, mean_beta=mean_beta,sigma_beta=sigma_beta, sigma_0_X = sigma_0_X,Xi=Xi))
 }

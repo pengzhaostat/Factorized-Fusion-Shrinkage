@@ -228,17 +228,17 @@ for (t in 133:136){
 
 
 
-dev.new()
-par(mfrow=c(2,2))
-par(mar=rep(2,4))
-#1989 -1815 =174
-### US 1989 - 1992
-#data_name = c(1:5,7:n)
-data_name = c(1,2,16,18,20,22,26,45,48,49,59,67,92,107,115,157)
-plot_pre = plot_sub_preprocess(Xm,Y,t1=174,t2=177,data_label = label.plot[[174]])
-for (t in 174:177){
-  plot_clus_igraph_sub(Xm[[t]],Y[[t]],data_cont,t+1816-1,label.plot[[t]],plot_pre$axis_lim,data_name)
-}
+# dev.new()
+# par(mfrow=c(2,2))
+# par(mar=rep(2,4))
+# #1989 -1815 =174
+# ### US 1989 - 1992
+# #data_name = c(1:5,7:n)
+# data_name = c(1,2,16,18,20,22,26,45,48,49,59,67,92,107,115,157)
+# plot_pre = plot_sub_preprocess(Xm,Y,t1=174,t2=177,data_label = label.plot[[174]])
+# for (t in 174:177){
+#   plot_clus_igraph_sub(Xm[[t]],Y[[t]],data_cont,t+1816-1,label.plot[[t]],plot_pre$axis_lim,data_name)
+# }
 
 
 
@@ -255,14 +255,4 @@ for (t in c(136,177)){
   plot_clus_igraph_sub(Xm[[t]],Y[[t]],data_cont,t+1816-1,label.plot[[177]],plot_pre$axis_lim,data_name=which(data_name) )
 }
 
-# km = kmeans(Xm[[136]][data_name,],centers = 3,nstart = 50)
-# 
-# km$cluster
-# 
-# plot(Xm[[136]][data_name,],col=km$cluster)
-# 
-# km2 = kmeans(Xm[[177]][data_name,],centers = 3,nstart = 50)
-# 
-# plot(Xm[[177]][data_name,],col=km2$cluster)
-# 
-# rand.index(km$cluster,km2$cluster)
+

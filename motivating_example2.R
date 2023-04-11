@@ -99,6 +99,7 @@ for ( i in 3:n){
 
 Y = vector("list", T)
 
+
 for (t in 1:T){
   Y[[t]] = positions_to_edges_binary(X,beta,sigma,t)
 }

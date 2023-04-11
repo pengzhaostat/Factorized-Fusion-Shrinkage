@@ -177,7 +177,7 @@ MP_gibbs_mult_Sigma =  function(Y, init_sigma_X1=NULL, Sigma_list, tau =1, max_i
       tau = mean(invgamma_sample[invgamma_sample>1])
       
     }    else if (global_prior =='fixed'){
-      tau = 100
+      tau = tau
     }
     
     sg_inve_sq = (d+1)/(b0+1)
