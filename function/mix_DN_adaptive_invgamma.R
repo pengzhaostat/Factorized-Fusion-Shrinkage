@@ -70,11 +70,10 @@ mix_DN_adaptive_invgamma = function(Y,mean_beta_prior=0, sigma_beta_prior=sqrt(1
   #### tangent parameters
   
   Xi = vector("list", T)
-  A_Xi = vector("list", T)
+
   
   for (t in 1:T) { 
     Xi[[t]] = matrix(rep(1,n*n),nrow = n)
-    A_Xi[[t]] = matrix(rep(0,n*n),nrow = n)
   }
   
   
@@ -127,11 +126,11 @@ mix_DN_adaptive_invgamma = function(Y,mean_beta_prior=0, sigma_beta_prior=sqrt(1
           M_j = Mean_X[[t]][j,]
           V_i = Sigma_X[[t]][[i]]
           V_j = Sigma_X[[t]][[j]]
-          Xi[[t]][i,j] = distance_squared_inner_prod(M_i,M_j,V_i,V_j) +mean_beta^2+sigma_beta^2
-          A_Xi[[t]][i,j] = -tanh(Xi[[t]][i,j]/2)/(4*Xi[[t]][i,j])
+          c = t(M_i) %*% M_j+ mean_beta
+          Xi[[t]][i,j] = 1/(2*c)*(exp(c)-1)/(exp(c)+1)/(-2)
           if (j!= i){ 
-            V_beta_cumulative= V_beta_cumulative -  2*A_Xi[[t]][i,j]*alpha
-            M_beta_cumulative = M_beta_cumulative + (Y[[t]][i,j]-0.5+2*A_Xi[[t]][i,j]* t(M_i) %*% M_j)*alpha
+            V_beta_cumulative= V_beta_cumulative -  2*Xi[[t]][i,j]*alpha
+            M_beta_cumulative = M_beta_cumulative + (Y[[t]][i,j]-0.5+2*Xi[[t]][i,j]* t(M_i) %*% M_j)*alpha
           }
         }
       }
@@ -206,9 +205,9 @@ mix_DN_adaptive_invgamma = function(Y,mean_beta_prior=0, sigma_beta_prior=sqrt(1
           }
           
           if (j != i){
-            V_X_cumulative[[t]][[i]] = V_X_cumulative[[t]][[i]] -2* A_Xi[[t]][i,j]*( M_j %*% t(M_j) + V_j)*alpha
+            V_X_cumulative[[t]][[i]] = V_X_cumulative[[t]][[i]] -2* Xi[[t]][i,j]*( M_j %*% t(M_j) + V_j)*alpha
             M_X_cumulative[[t]][i,] = M_X_cumulative[[t]][i,] +
-              (Y[[t]][i,j]-0.5+2*A_Xi[[t]][i,j]*mean_beta_new) * M_j*alpha
+              (Y[[t]][i,j]-0.5+2*Xi[[t]][i,j]*mean_beta_new) * M_j*alpha
           }
         }
       }

@@ -90,11 +90,10 @@ MP_binary_weighted_adaptive = function(Y,tau=1, gap =1, max_iter=2000, X_init = 
   sigma_0_Z =rep(0.5,p)
   
   Xi = vector("list", T)
-  A_Xi = vector("list", T)
+
   
   for (t in 1:T) { 
     Xi[[t]] = matrix(rep(1,n*n),nrow = n)
-    A_Xi[[t]] = matrix(rep(0,n*n),nrow = n)
   }
   #--------------------------------Algorithm---------------------
   K= 1000
@@ -144,11 +143,11 @@ MP_binary_weighted_adaptive = function(Y,tau=1, gap =1, max_iter=2000, X_init = 
           M_j = Mean_Z[[j]][t,]
           V_i = Sigma_X[[i]][[t]]
           V_j = Sigma_Z[[j]][[t]]
-          Xi[[t]][i,j] = distance_squared_inner_prod(M_i,M_j,V_i,V_j)+mean_beta^2+sigma_beta^2
-          A_Xi[[t]][i,j] = -tanh(Xi[[t]][i,j]/2)/(4*Xi[[t]][i,j])
+          c = t(M_i) %*% M_j+ mean_beta
+          Xi[[t]][i,j] = 1/(2*c)*(exp(c)-1)/(exp(c)+1)/(-2)
           if (j!= i){ 
-            V_beta_cumulative= V_beta_cumulative -  2*A_Xi[[t]][i,j]*alpha
-            M_beta_cumulative = M_beta_cumulative + (Y[[t]][i,j]-0.5+2*A_Xi[[t]][i,j]* t(M_i) %*% M_j)*alpha
+            V_beta_cumulative= V_beta_cumulative -  2*Xi[[t]][i,j]*alpha
+            M_beta_cumulative = M_beta_cumulative + (Y[[t]][i,j]-0.5+2*Xi[[t]][i,j]* t(M_i) %*% M_j)*alpha
           }
         }
       }
@@ -171,8 +170,8 @@ MP_binary_weighted_adaptive = function(Y,tau=1, gap =1, max_iter=2000, X_init = 
         for (j in 1:p){
             M_j = Mean_Z[[j]][t,]
             V_j = Sigma_Z[[j]][[t]]
-            V_X_cumulative[[i]][[t]] = V_X_cumulative[[i]][[t]] -2* A_Xi[[t]][i,j]*( M_j %*% t(M_j) + V_j)*alpha
-            M_X_cumulative[[i]][t,] = M_X_cumulative[[i]][t,] +  (Y[[t]][i,j]-0.5+2*A_Xi[[t]][i,j]*mean_beta_new) * M_j*alpha
+            V_X_cumulative[[i]][[t]] = V_X_cumulative[[i]][[t]] -2* Xi[[t]][i,j]*( M_j %*% t(M_j) + V_j)*alpha
+            M_X_cumulative[[i]][t,] = M_X_cumulative[[i]][t,] +  (Y[[t]][i,j]-0.5+2*Xi[[t]][i,j]*mean_beta_new) * M_j*alpha
         }
         M_X_cumulative[[i]][t,] = solve(V_X_cumulative[[i]][[t]]) %*% M_X_cumulative[[i]][t,]
         }
@@ -211,8 +210,8 @@ MP_binary_weighted_adaptive = function(Y,tau=1, gap =1, max_iter=2000, X_init = 
          for (i in 1:n){
            M_i = Mean_X_new[[i]][t,]
            V_i = Sigma_X_new[[i]][[t]]
-           V_Z_cumulative[[j]][[t]] = V_Z_cumulative[[j]][[t]] -2* A_Xi[[t]][i,j]*( M_i %*% t(M_i) + V_i)*alpha
-           M_Z_cumulative[[j]][t,] = M_Z_cumulative[[j]][t,] +  (Y[[t]][i,j]-0.5+2*A_Xi[[t]][i,j]*mean_beta_new) * M_i*alpha
+           V_Z_cumulative[[j]][[t]] = V_Z_cumulative[[j]][[t]] -2* Xi[[t]][i,j]*( M_i %*% t(M_i) + V_i)*alpha
+           M_Z_cumulative[[j]][t,] = M_Z_cumulative[[j]][t,] +  (Y[[t]][i,j]-0.5+2*Xi[[t]][i,j]*mean_beta_new) * M_i*alpha
          }
          M_Z_cumulative[[j]][t,] = solve(V_Z_cumulative[[j]][[t]]) %*% M_Z_cumulative[[j]][t,]
        }
@@ -259,7 +258,7 @@ MP_binary_weighted_adaptive = function(Y,tau=1, gap =1, max_iter=2000, X_init = 
     
 
     
-    if((err[k]-err[k-1] <  0.001 || k>max_iter+1)){
+    if( abs(err[k]-err[k-1]) <  gap || k>max_iter+1){
       ind = 1
     }    else{
       

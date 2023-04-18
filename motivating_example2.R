@@ -71,7 +71,7 @@ d = 2   # dimension for the latent vectors, d = 2 for better visualization
 
 sigma = 0.2
 
-prob = 0.99
+prob = 0.9
 
 beta = 3
 
@@ -83,15 +83,8 @@ for ( i in 1:2){
 }
 
 
-# X <- vector("list", n)
-# 
-# X[[1]] = trend_generate(T,d,sigma,p=0.5)
-# 
-# X[[2]] = trend_generate(T,d,sigma,p=0.5)
-
 
 for ( i in 3:n){
- # X[[i]] = trend_generate(T,d,sigma,p=1)
   
   X[[i]] = binary_generate(T,d,prob=1)
 
@@ -105,11 +98,11 @@ for (t in 1:T){
 }
 
 
-MP_list = mix_DN_adaptive_invgamma (Y,mean_beta_prior=0, sigma_beta_prior=sqrt(10), gap = 0.01 )
+MP_list = mix_DN_adaptive_invgamma (Y,mean_beta_prior=0, sigma_beta_prior=sqrt(10), gap =1e-3 )
 
 
 
-MF_list = MP_binary_weighted_adaptive (Y, gap =0.01, max_iter=200,global_prior='Cauthy')
+MF_list = MP_binary_weighted_adaptive (Y, gap =1e-3, max_iter=200,global_prior='Cauthy')
 
 
 

@@ -102,7 +102,7 @@ for (t in 1:T){
 
 
 
-MF_list = MP_binary_weighted_adaptive (Y, gap =0.01, max_iter=200,global_prior='Cauthy',gap_per_iter=1e-3)
+MF_list = MP_binary_weighted_adaptive (Y, gap =1e-3, max_iter=200,global_prior='Cauthy',gap_per_iter=1e-3)
 
 
 svd_pred_list = vector("list", T)
