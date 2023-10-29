@@ -295,3 +295,7 @@ ggplot(df_plot, aes(prob, y=RI, fill=varaince_prior)) +
 #  
 #  ggplot(data=df_plot, aes(x=varaince_prior, y=RI)) + 
 #    geom_boxplot()
+
+
+
+

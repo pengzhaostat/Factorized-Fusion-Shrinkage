@@ -52,7 +52,7 @@ positions_to_edges_binary = function(X,beta,sigma,t){
     for(j in 1:n){
       if(j > i)
       {
-        edge_mat[j,i] = rbinom(n=1, size=1, prob=1/(1+exp(-beta*t(X[[i]][t,])%*%X[[j]][t,])))
+        edge_mat[j,i] = rbinom(n=1, size=1, prob=1/(1+exp(-beta-t(X[[i]][t,])%*%X[[j]][t,])))
       }
     }
   }
@@ -71,9 +71,9 @@ d = 2   # dimension for the latent vectors, d = 2 for better visualization
 
 sigma = 0.2
 
-prob = 0.9
+prob = 0.95
 
-beta = 3
+beta = -3
 
 
 X <- vector("list", n)
@@ -92,10 +92,14 @@ for ( i in 3:n){
 
 Y = vector("list", T)
 
+p_sparsity = rep(0,T)
 
 for (t in 1:T){
   Y[[t]] = positions_to_edges_binary(X,beta,sigma,t)
+  
+  p_sparsity[t] = sum(Y[[t]])/n^2
 }
+
 
 
 MP_list = mix_DN_adaptive_invgamma (Y,mean_beta_prior=0, sigma_beta_prior=sqrt(10), gap =1e-3 )
