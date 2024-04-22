@@ -1,5 +1,5 @@
 rm(list=ls())
-set.seed(2021)
+set.seed(2023)
 library(MASS)
 library(mvtnorm)
 library(igraph)
@@ -30,7 +30,7 @@ n = 20   # n = 100;
 
 T = 100  # T = 100;
 
-tau = 0.5 # tau=0.01,0.02,0.05,0.1,0.2,0.3
+tau = 0.01 # tau=0.01,0.02,0.05,0.1,0.2,0.3
 
 rho = 0
 
@@ -110,17 +110,15 @@ sigma_X1 = sigma_0;   # initial sd of X[[1]],
 
 trans_sd = tau;   # sd of transition distribution, 
 
-gap = 1e-4
+gap = 1e-3
 
 
 start_time_MF <- Sys.time()
 
 
-# MF_list =mean_field_DN_adaptive (Y = Y,rho=1, mean_beta_prior = mean_beta_prior, sigma_beta_prior = sigma_beta_prior,
-#                           gap = gap)
 
 MF_list = mix_DN_adaptive_invgamma(Y = Y, rho=1, mean_beta_prior = mean_beta_prior, sigma_beta_prior = sigma_beta_prior,
-                           gap = gap)
+                           gap = 1e-3)
 
 
 end_time_MF <- Sys.time()
@@ -161,10 +159,10 @@ for(t in 1:T){
 }
 
 
-cat('Running time for adaptive MF:',as.numeric(end_time_MF-start_time_MF,units = "secs"),'\n')
-cat('Pearson correlation for MF:',mean(auc_mf),'\n')
+cat('Running time for IGLSM:',as.numeric(end_time_MF-start_time_MF,units = "secs"),'\n')
+cat('Pearson correlation for IGLSM:',mean(auc_mf),'\n')
 
 
-cat('Running time for SMF:',as.numeric(end_time_Mix -start_time_Mix ,units = "secs"),'\n')
-cat('Pearson correlation for SMF:',mean(auc_mix),'\n')
+cat('Running time for FFS:',as.numeric(end_time_Mix -start_time_Mix ,units = "secs"),'\n')
+cat('Pearson correlation for FFS:',mean(auc_mix),'\n')
 
