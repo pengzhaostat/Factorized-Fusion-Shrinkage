@@ -52,6 +52,8 @@ airline = airline[airline$ORIGIN_CITY_NAME %in% city,]
 airline = airline[airline$DEST_CITY_NAME %in% city,]
 
 
+
+
 n1 = 100
 
 n2 = n1

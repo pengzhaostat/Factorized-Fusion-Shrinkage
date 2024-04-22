@@ -39,7 +39,6 @@ MP_Gaussain_weighted_adaptive = function(Y,tau=0.01, sigma=0.5 , gap =1e-6, max_
   
   p = length(Y[[1]][1,])
   
-  d = 2
   #--------------------------------Model Initialization---------------------
   mean_beta = 0;    #mean of beta, 
   

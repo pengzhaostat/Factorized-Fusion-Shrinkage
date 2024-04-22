@@ -52,7 +52,7 @@ positions_to_edges_binary = function(X,beta,sigma,t){
     for(j in 1:n){
       if(j > i)
       {
-        edge_mat[j,i] = rbinom(n=1, size=1, prob=1/(1+exp(-beta-t(X[[i]][t,])%*%X[[j]][t,])))
+        edge_mat[j,i] = rbinom(n=1, size=1, prob=1/(1+exp(-beta-3*t(X[[i]][t,])%*%X[[j]][t,])))
       }
     }
   }
@@ -71,9 +71,9 @@ d = 2   # dimension for the latent vectors, d = 2 for better visualization
 
 sigma = 0.2
 
-prob = 0.95
+prob = 0.99
 
-beta = -3
+beta = 0
 
 
 X <- vector("list", n)
@@ -87,7 +87,7 @@ for ( i in 1:2){
 for ( i in 3:n){
   
   X[[i]] = binary_generate(T,d,prob=1)
-
+  
 }
 
 Y = vector("list", T)
@@ -129,82 +129,83 @@ for (i in 1:n){
 }
 
 
-  cor(res, pred_mean_MP,method = "pearson")
-  cor(res, pred_mean_MF,method = "pearson")
+cor(res, pred_mean_MP,method = "pearson")
+cor(res, pred_mean_MF,method = "pearson")
 
- Xm = vector("list", T)
- for(t in 1:T){
-   Xm [[t]] =matrix(rep(0,n*d),nrow=n)
-   for (i in 1:n){
-     Xm [[t]][i,] = MP_list$Mean_X[[t]][i,]
-   }
- }
- for ( t in 2:T){
-   Xm[[t]] = t(procrustes_r(t(Xm[[t-1]]),t(Xm[[t]]))$B.transformed)
- }
-
-
- Xm2 = vector("list", T)
- for(t in 1:T){
-   Xm2 [[t]] =matrix(rep(0,n*d),nrow=n)
-   for (i in 1:n){
-     Xm2 [[t]][i,] = MF_list$Mean_X[[i]][t,]
-   }
- }
- for ( t in 2:T){
-   Xm2[[t]] = t(procrustes_r(t(Xm2[[t-1]]),t(Xm2[[t]]))$B.transformed)
- }
- 
- 
- par(mfrow=c(2,3))
- par(mar=rep(3,4))
+Xm = vector("list", T)
+for(t in 1:T){
+  Xm [[t]] =matrix(rep(0,n*d),nrow=n)
+  for (i in 1:n){
+    Xm [[t]][i,] = MP_list$Mean_X[[t]][i,]
+  }
+}
+for ( t in 2:T){
+  Xm[[t]] = t(procrustes_r(t(Xm[[t-1]]),t(Xm[[t]]))$B.transformed)
+}
 
 
- plot_clus_igraph(Xm[[1]],Y[[1]],c(rep(2,2),rep(1,n-2)),1,1:n,v_shape='square')
- mtext('IGLSM', side=2)
- plot_clus_igraph(Xm[[50]],Y[[50]],c(rep(2,2),rep(1,n-2)),50,1:n,v_shape='square')
- plot_clus_igraph(Xm[[100]],Y[[100]],c(rep(2,2),rep(1,n-2)),100,1:n,v_shape='square')
- 
- 
- plot_clus_igraph(Xm2[[1]],Y[[1]],c(rep(2,2),rep(1,n-2)),1,1:n,v_shape='circle')
- mtext('FFS', side=2)
- plot_clus_igraph(Xm2[[50]],Y[[50]],c(rep(2,2),rep(1,n-2)),50,1:n,v_shape='circle')
- plot_clus_igraph(Xm2[[100]],Y[[100]],c(rep(2,2),rep(1,n-2)),100,1:n,v_shape='circle')
-
- 
- Xt = vector("list", T)
- for(t in 1:T){
-   Xt [[t]] =matrix(rep(0,n*d),nrow=n)
-   for (i in 1:n){
-     Xt [[t]][i,] = X[[i]][t,]
-   }
- }
-
- heat_matrix = matrix(rep(0,3*n*(T-1)),ncol=T-1)
-
- for (t in 2:T){
-   heat_matrix[,t-1]= as.vector(c(sqrt(rowSums((Xm[[t]]-Xm[[t-1]])^2)),sqrt(rowSums((Xm2[[t]]-Xm2[[t-1]])^2)),
-                                  sqrt(rowSums((Xt[[t]]-Xt[[t-1]])^2))))
- }
+Xm2 = vector("list", T)
+for(t in 1:T){
+  Xm2 [[t]] =matrix(rep(0,n*d),nrow=n)
+  for (i in 1:n){
+    Xm2 [[t]][i,] = MF_list$Mean_X[[i]][t,]
+  }
+}
+for ( t in 2:T){
+  Xm2[[t]] = t(procrustes_r(t(Xm2[[t-1]]),t(Xm2[[t]]))$B.transformed)
+}
 
 
+par(mfrow=c(2,3))
+par(mar=rep(3,4))
 
 
- library(ggplot2)
- library(tidyr)
- library(tibble)
- library(dplyr)
+plot_clus_igraph(Xm[[1]],Y[[1]],c(rep(2,2),rep(1,n-2)),1,1:n,v_shape='square')
+mtext('IGLSM', side=2)
+plot_clus_igraph(Xm[[75]],Y[[75]],c(rep(2,2),rep(1,n-2)),75,1:n,v_shape='square')
+plot_clus_igraph(Xm[[100]],Y[[100]],c(rep(2,2),rep(1,n-2)),100,1:n,v_shape='square')
 
- dev.new()
 
- df_plot = heat_matrix%>%
-   as_tibble() %>%
-   rowid_to_column(var="Index0") %>%
-   gather(key="t", value="Value", -1) %>%
-   mutate(t=as.numeric(gsub("V","",t)))
+plot_clus_igraph(Xm2[[1]],Y[[1]],c(rep(2,2),rep(1,n-2)),1,1:n,v_shape='circle')
+mtext('FFS', side=2)
+plot_clus_igraph(Xm2[[75]],Y[[75]],c(rep(2,2),rep(1,n-2)),75,1:n,v_shape='circle')
+plot_clus_igraph(Xm2[[100]],Y[[100]],c(rep(2,2),rep(1,n-2)),100,1:n,v_shape='circle')
 
- df_plot$method = rep(c(rep('IGLSM',n),rep('FSS',n),rep('Truth',n)),T-1)
- df_plot$Index = factor(rep(1:n,3*(T-1)))
 
- ggplot(df_plot, aes(Index, t, fill= Value)) + facet_wrap(vars(method))+
-   geom_tile()+ scale_fill_gradient(low="white", high="blue")+ theme(text = element_text(size = 16))
+Xt = vector("list", T)
+for(t in 1:T){
+  Xt [[t]] =matrix(rep(0,n*d),nrow=n)
+  for (i in 1:n){
+    Xt [[t]][i,] = X[[i]][t,]
+  }
+}
+
+heat_matrix = matrix(rep(0,3*n*(T-1)),ncol=T-1)
+
+for (t in 2:T){
+  heat_matrix[,t-1]= as.vector(c(sqrt(rowSums((Xm[[t]]-Xm[[t-1]])^2)),sqrt(rowSums((Xm2[[t]]-Xm2[[t-1]])^2)),
+                                 sqrt(rowSums((Xt[[t]]-Xt[[t-1]])^2))))
+}
+
+
+
+
+library(ggplot2)
+library(tidyr)
+library(tibble)
+library(dplyr)
+
+dev.new()
+
+df_plot = heat_matrix%>%
+  as_tibble() %>%
+  rowid_to_column(var="Index0") %>%
+  gather(key="t", value="Value", -1) %>%
+  mutate(t=as.numeric(gsub("V","",t)))
+
+df_plot$method = rep(c(rep('IGLSM',n),rep('FSS',n),rep('Truth',n)),T-1)
+df_plot$Index = factor(rep(1:n,3*(T-1)))
+
+ggplot(df_plot, aes(Index, t, fill= Value)) + facet_wrap(vars(method))+
+  geom_tile()+ scale_fill_gradient(low="white", high="black")+ theme(text = element_text(size = 16))+
+  xlab('Row index')+ylab('Transition time')

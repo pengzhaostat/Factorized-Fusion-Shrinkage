@@ -126,7 +126,7 @@ mix_DN_adaptive_invgamma = function(Y,mean_beta_prior=0, sigma_beta_prior=sqrt(1
           M_j = Mean_X[[t]][j,]
           V_i = Sigma_X[[t]][[i]]
           V_j = Sigma_X[[t]][[j]]
-          c = t(M_i) %*% M_j+ mean_beta
+          c = sqrt(distance_squared_inner_prod(M_i,M_j,V_i,V_j) +mean_beta^2+sigma_beta^2)
           Xi[[t]][i,j] = 1/(2*c)*(exp(c)-1)/(exp(c)+1)/(-2)
           if (j!= i){ 
             V_beta_cumulative= V_beta_cumulative -  2*Xi[[t]][i,j]*alpha
@@ -362,7 +362,7 @@ mix_DN_adaptive_invgamma = function(Y,mean_beta_prior=0, sigma_beta_prior=sqrt(1
     
     
  
-    if(train_auc[k]-train_auc[k-1]< 0.01 && k>min_iter+1){
+    if(train_auc[k]-train_auc[k-1]< gap && k>min_iter+1){
       ind = 1
     }    else{
       cat(train_auc[k],'\n')

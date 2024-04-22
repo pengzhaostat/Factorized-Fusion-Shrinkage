@@ -142,7 +142,7 @@ plot_clus_igraph = function(Xm1,Y1,clus,t,label,NA_ind,v_shape=NULL){
             vertex.color = adjustcolor("white", alpha.f = 0),edge.color=adjustcolor("pink", alpha.f = 1),display.isolates=FALSE,xlim=c(-1,1),ylim=c(-1,1), asp = 0)
   #  title(main=paste("t =",t,sep = ' '),cex.main=1.5)
   #  legend('topleft',legend=levels(factor(clus)),pch=c(1,0),bty = "n",cex=1.6)
- legend('bottom',inset = c(0, -.2),legend=paste("t =",t,sep = ' '),cex = 1.5,bty = "n")
+ legend('bottomright',inset = c(0, 0),legend=paste("t =",t,sep = ' '),cex = 1.5,bty = "n")
   return( NULL)
 }
 
@@ -275,4 +275,38 @@ label_check = function(Xm,data_label,t,node,k,NA_list){
   top_k = as.character(data_label[sort(distance_inner,index.return=TRUE,decreasing = TRUE,na.last = TRUE)$ix[1:k]])
   bottom_k =   as.character(data_label[sort(-distance_inner,index.return=TRUE,decreasing = TRUE,na.last = TRUE)$ix[1:k]])
   return(list(country= as.character(data_label[node]),top_close=top_k,top_far=bottom_k))
+}
+
+
+binary_generate = function(T,d,prob){
+  X = matrix(rep(0,T*d),nrow = T)
+  X[1,] <- rbinom(n=d,size=1,prob=0.5)
+  for (t in 2:T) {
+    increment = rbinom(n=1,size=1,prob=(prob-1/(2^d))/(1-1/(2^d)))
+    if (increment == 1){
+      X[t,] <- X[t-1,]
+    } else{
+      X[t,] <- rbinom(n=d,size=1,prob=0.5)
+    }
+  }
+  X[X==0] = -1
+  return(X)
+}
+
+
+
+
+positions_to_edges_binary = function(X,beta,sigma,t){
+  n = length(X)
+  edge_mat = matrix(rep(0,n*n),nrow = n)
+  for (i in 1:n){
+    for(j in 1:n){
+      if(j > i)
+      {
+        edge_mat[j,i] = rbinom(n=1, size=1, prob=1/(1+exp(-beta-t(X[[i]][t,])%*%X[[j]][t,])))
+      }
+    }
+  }
+  edge_mat = edge_mat+ t(edge_mat)
+  return(edge_mat)
 }

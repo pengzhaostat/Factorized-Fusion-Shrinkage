@@ -6,8 +6,8 @@ distance_squared_inner_prod = function(mu1,mu2,Sigma1,Sigma2){
 
 # Core function to perform group_wise fused shirnkage for a single subject, all other functions, like Gaussian matrix factorization, binary network and tensor models will use this function iteratively
 
-MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_init = NULL,alpha = 0.95, d=2,
-                                       global_prior='Cauthy'){
+MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_init = NULL,alpha = 0.95, d=2,mean_beta_prior=0,inter_gap=1e-3,
+                                       sigma_beta_prior=sqrt(10),global_prior='Cauthy',first_index =FALSE){
   
   tau = 1/tau^2
   
@@ -15,15 +15,11 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_i
   
   n = length(Y[[1]][,1])
   
-  d = 2
   #--------------------------------Model Initialization---------------------
-  mean_beta = rep(0,T);    #mean of beta, 
+  mean_beta = 0;    #mean of beta, 
   
-  sigma_beta = rep(1,T);  #sd of beta, 
+  sigma_beta = 1;  #sd of beta, 
   
-  mean_beta_new = mean_beta
-  
-  sigma_beta_new = sigma_beta
   #### target parameters
   Mean_X = vector("list", n); #Mean of X, Mean_X[[t]][i,] 
   
@@ -37,21 +33,17 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_i
     }
   }
   
- 
+  
   Mean_X_new = vector("list", n)
   
   Sigma_X_new = replicate(n=n, expr=list())
   
-
+  
   lambda_X = matrix(rep(1,n*(T-1)),nrow=n)
   
   v_X = matrix(rep(1,n*(T-1)),nrow=n)
   
-  mean_beta_prior = rep(0,T)
   
-
-  
-  sigma_beta_prior = 1
   
   EX = rep(0,T-1)
   
@@ -62,19 +54,17 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_i
       Sigma_X_new[[i]][[t]] =  0*diag(d)
     }
   }
-
+  
   
   sigma_0_X = rep(0.5,n)
   
-
+  
   
   Xi = vector("list", T)
-
+  
   
   for (t in 1:T) { 
     Xi[[t]] = matrix(rep(1,n*n),nrow = n)
-    p_prior = sum(Y[[t]])/n^2
-    mean_beta_prior[t] = log(p_prior/(1-p_prior))
   }
   #--------------------------------Algorithm---------------------
   K= 1000
@@ -99,9 +89,9 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_i
   
   while(k<K && ind ==0){
     
-     V_beta_cumulative = rep(0,T)
+    V_beta_cumulative = 0
     # 
-     M_beta_cumulative = rep(0,T)
+    M_beta_cumulative = 0
     
     V_X_cumulative =  replicate(n=n, expr=list())
     
@@ -124,26 +114,27 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_i
           M_j = Mean_X[[j]][t,]
           V_i = Sigma_X[[i]][[t]]
           V_j = Sigma_X[[j]][[t]]
-          c = t(M_i) %*% M_j+ mean_beta[t]
+          c = sqrt(distance_squared_inner_prod(M_i,M_j,V_i,V_j) +mean_beta^2+sigma_beta^2)
           Xi[[t]][i,j] = 1/(2*c)*(exp(c)-1)/(exp(c)+1)/(-2)
           if (j!= i){
-            V_beta_cumulative[t]= V_beta_cumulative[t] -  2*Xi[[t]][i,j]*alpha
-            M_beta_cumulative[t] = M_beta_cumulative[t] + (Y[[t]][i,j]-0.5+2*Xi[[t]][i,j]* t(M_i) %*% M_j)*alpha
+            V_beta_cumulative= V_beta_cumulative -  2*Xi[[t]][i,j]*alpha
+            M_beta_cumulative = M_beta_cumulative + (Y[[t]][i,j]-0.5+2*Xi[[t]][i,j]* t(M_i) %*% M_j)*alpha
           }
         }
       }
     }
+    
+
     ### update of sigma_beta
-    for (t in 1:T){
     
-    sigma_beta_new[t] = (sigma_beta_prior^(-2)+ V_beta_cumulative[t] )^(-1/2)
+    sigma_beta_new = (sigma_beta_prior^(-2)+ V_beta_cumulative )^(-1/2)
     
- #   sigma_beta_new = 0
+    #   sigma_beta_new = 0
     ### update of mean_beta
     
-     mean_beta_new[t] = as.numeric(sigma_beta_new^2* (sigma_beta_prior^(-2)*mean_beta_prior[t] + M_beta_cumulative[t]) )
-}
- #   mean_beta_new = 0
+    mean_beta_new = as.numeric(sigma_beta_new^2* (sigma_beta_prior^(-2)*mean_beta_prior + M_beta_cumulative) )
+    
+    #   mean_beta_new = beta_known
     
     ### update of Sigma_X, Mean_X
     
@@ -156,7 +147,7 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_i
             V_i = Sigma_X[[i]][[t]]
             V_j = Sigma_X[[j]][[t]]
             V_X_cumulative[[i]][[t]] = V_X_cumulative[[i]][[t]] -2* Xi[[t]][i,j]*( M_j %*% t(M_j) + V_j)*alpha
-            M_X_cumulative[[i]][t,] = M_X_cumulative[[i]][t,] +  (Y[[t]][i,j]-0.5+2*Xi[[t]][i,j]*mean_beta_new[t]) * M_j*alpha
+            M_X_cumulative[[i]][t,] = M_X_cumulative[[i]][t,] +  (Y[[t]][i,j]-0.5+2*Xi[[t]][i,j]*mean_beta_new) * M_j*alpha
           } else if (j < i)
           {
             M_i = Mean_X[[i]][t,]
@@ -164,22 +155,22 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_i
             V_i = Sigma_X[[i]][[t]]
             V_j = Sigma_X_new[[j]][[t]] 
             V_X_cumulative[[i]][[t]] = V_X_cumulative[[i]][[t]] -2* Xi[[t]][i,j]*( M_j %*% t(M_j) + V_j)*alpha
-            M_X_cumulative[[i]][t,] = M_X_cumulative[[i]][t,] + (Y[[t]][i,j]-0.5+2*Xi[[t]][i,j]*mean_beta_new[t])  * M_j*alpha
+            M_X_cumulative[[i]][t,] = M_X_cumulative[[i]][t,] + (Y[[t]][i,j]-0.5+2*Xi[[t]][i,j]*mean_beta_new)  * M_j*alpha
           }
         }
         M_X_cumulative[[i]][t,] = ginv(V_X_cumulative[[i]][[t]]) %*% M_X_cumulative[[i]][t,]
-        }
-        
+      }
+      
       # MF_gibbs =  MP_gibbs_mult_Sigma (Y = M_X_cumulative[[i]], init_sigma_X1=sigma_0_X[i], V_X_cumulative[[i]],  tau =tau, max_iter = 100, 
       #                                  init_Mean=Mean_X[[i]], init_Sigma = Sigma_X[[i]],  gap = 1e-6)
       
       MF_gibbs =  MP_gibbs_mult_Sigma (Y = M_X_cumulative[[i]], Sigma_list = V_X_cumulative[[i]], tau=tau,  max_iter = 100, 
-                                         gap = 1e-4, global_prior=global_prior)
+                                       gap = inter_gap, global_prior=global_prior)
       
-#      MF_m = MF_gibbs$Mean
+      #      MF_m = MF_gibbs$Mean
       
-#      MF_m [MF_m>10] =10
-#      MF_m [MF_m<-10] = -10
+      #      MF_m [MF_m>10] =10
+      #      MF_m [MF_m<-10] = -10
       
       Mean_X_new[[i]] = MF_gibbs$Mean
       
@@ -188,29 +179,27 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_i
       sigma_0_X[i] = MF_gibbs$sigma_X1
       
     }
- 
-  auc_est = rep(0,T)
     
     
-    for (t in 1:T){
-      pred_mean = rep(n*n,0)
-      res = rep(n*n,0)
-      r=1
-      for (i in 1:n){
-        for (j in 1:n){
-            pred_mean[r] = 1/(1+exp(-mean_beta_new[t]-t(-Mean_X_new[[i]][t,])%*% Mean_X_new[[j]][t,]))
-            res[r] = Y[[t]][i,j]
-            r=r+1
+    
+    pred_mean = rep(T*n*n,0)
+    res = rep(T*n*n,0)
+    r=1
+    
+    for (i in 1:n){
+      for (j in 1:n){
+        for (t in 1:T){
+          pred_mean[r] = 1/(1+exp(-mean_beta_new-t(-Mean_X_new[[i]][t,])%*% Mean_X_new[[j]][t,]))
+          res[r] = Y[[t]][i,j]
+          r=r+1
         }
       }
-      roc_obj <- roc(res, pred_mean,quiet=TRUE)
-      auc_est[t] = auc(roc_obj)
-      }
+    }
+    
+    roc_obj <- roc(res, pred_mean,quiet=TRUE)
+    err[k]= auc(roc_obj)
     
     
-    err[k]= mean(auc_est)
-     
-
     
     if( abs(err[k]-err[k-1] < gap)  || k>max_iter+1){
       ind = 1
@@ -232,7 +221,19 @@ MP_binary_weighted_adaptive = function(Y,tau=0.01, gap =0.01, max_iter=2000, X_i
     }
     
   }
+  if (first_index == TRUE){
+    Mean_X_2 = vector("list", T)
+    for (t in 1:T){
+      Mean_X_2[[t]] = matrix(rep(0,n*d),nrow = n)
+      for (i in 1:n){
+        Mean_X_2[[t]][i,] = Mean_X[[i]][t,]
+      }
+    }
+  } else{
+    Mean_X_2 = Mean_X
+  }
+  
   tau = MF_gibbs$tau
-  return(list(norm = norm_stop[2:(k-1)], Mean_X= Mean_X, Sigma_X= Sigma_X, iter = k-1, 
+  return(list(norm = norm_stop[2:(k-1)], Mean_X= Mean_X_2, Sigma_X= Sigma_X, iter = k-1, 
               tau=tau,lambda_X =lambda_X, mean_beta=mean_beta,sigma_beta=sigma_beta, sigma_0_X = sigma_0_X,Xi=Xi))
 }
