@@ -1,6 +1,6 @@
-Code for Factorized Fusion Shrinkage for Dynamic Relational Data
+## Code for Factorized Fusion Shrinkage for Dynamic Relational Data
 
-Files for simulation
+# Files for simulation
 motivating_example2.R: code for reproducing Fig. 1
 
 Gaussian_simu.R: Example of case 1 in Fig. 2
@@ -29,7 +29,7 @@ simu_smooth.R: code for reproducing Fig. 9
 
 mcmc_simu.R: code for generating results that can reproduce Fig. 7-8
 
-Files for functions, in the function folder
+# Files for functions, in the function folder
 MP_gibbs_multi_Sigma_adaptive.R: core function, implement main VI algorithm for each block
 
 MP_gibbs_Gaussnetwork_adaptive.R: function for the Gaussian matrix factorization case
