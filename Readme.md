@@ -14,9 +14,7 @@ Code for Factorized Fusion Shrinkage for Dynamic Relational Data
 
 `trend_simu_algorithm_compare.R`: code for reproducing Fig. 16
 
-`formal_alliance.R`: code for reproducing formal alliance data analysis, Fig. 8-9 (Up to some orthogonal transformations)
-
-`airline.R`: code for reproducing airline data analysis, Fig. 7
+`formal_alliance.R`: code for reproducing formal alliance data analysis, Fig. 6-7 (Up to some orthogonal transformations)
 
 `global_local_prior.R`: code for reproducing Fig. 10
 
