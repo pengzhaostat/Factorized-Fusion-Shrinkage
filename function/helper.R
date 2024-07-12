@@ -180,11 +180,11 @@ plot_clus_igraph_sub_8 = function(Xm1,Y1,clus,t,label,axis_lim){
   v_size = c(20)
   a<- igraph::graph_from_data_frame(vertices = NodeList, d= Edge_list, directed = FALSE)
   igraph::plot.igraph(a,vertex.shape="circle",vertex.color=vertex.col, vertex.label=label,vertex.size=v_size,
-                      edge.arrow.size=0.001,vertex.label.cex = 0.7,vertex.label.color = adjustcolor("black", alpha.f = 1) ,vertex.frame.color = adjustcolor("white", alpha.f = 0),
+                      edge.arrow.size=0.001,vertex.label.cex = 0.5,vertex.label.color = adjustcolor("black", alpha.f = 1) ,vertex.frame.color = adjustcolor("white", alpha.f = 0),
                       edge.color=adjustcolor("pink", alpha.f = 1),rescale=F,axes = T,
                       xlim=c(axis_lim[1],axis_lim[2]),ylim=c(axis_lim[3],axis_lim[4]), asp = 0,
                       vertex.label.degree = -pi/2)
-  #  title(main=paste("t =",t,sep = ' '),cex.main=1.5)
+   title(main=paste("t =",t,sep = ' '),cex.main=1.5)
   #  legend('topleft',legend=levels(factor(clus)),pch=c(1,0),bty = "n",cex=1.6)
   legend('top',inset = c(0, -0.1),legend=paste("year =",t,sep = ' '),cex = 1.5,bty = "n")
   return( NULL)
@@ -233,18 +233,18 @@ plot_clus_igraph_sub = function(Xm1,Y1,clus,t,label,axis_lim,data_name){
   
 
  # v_shape= setdiff(igraph::shapes(), "")[c(1,1)]
-v_size= 20
+v_size= 15
 
   a<- igraph::graph_from_data_frame(vertices = NodeList, d= Edge_list, directed = FALSE)
 #  v_size = degree(a)
   igraph::plot.igraph(a,vertex.shape="circle",vertex.color=vertex.col, vertex.label=label,vertex.size=v_size,
-                      edge.arrow.size=0.001,vertex.label.cex = 0.7,vertex.label.color = adjustcolor("black", alpha.f = 1) ,vertex.frame.color = adjustcolor("white", alpha.f = 0),
+                      edge.arrow.size=0.001,vertex.label.cex = 1,vertex.label.color = adjustcolor("black", alpha.f = 1) ,vertex.frame.color = adjustcolor("white", alpha.f = 0),
                       edge.color=adjustcolor("pink", alpha.f = 1),rescale=F,axes = T,
                       xlim=c(axis_lim[1],axis_lim[2]),ylim=c(axis_lim[3],axis_lim[4]), asp = 0,
                       vertex.label.degree = -pi/2)
-  #  title(main=paste("t =",t,sep = ' '),cex.main=1.5)
-  #  legend('topleft',legend=levels(factor(clus)),pch=c(1,0),bty = "n",cex=1.6)
-  legend('top',inset = c(0, -0.1),legend=paste("year =",t,sep = ' '),cex = 1,bty = "n")
+    title(main=paste("year =",t,sep = ' '),cex.main=1.5)
+#    legend('topleft',legend=levels(factor(clus)),pch=c(1,0),bty = "n",cex=1.6)
+#  legend('top',inset = c(0, -0.1),legend=paste("year =",t,sep = ' '),cex = 1,bty = "n")
   return( NULL)
 }
 
