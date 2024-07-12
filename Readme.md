@@ -50,8 +50,6 @@ Code for Factorized Fusion Shrinkage for Dynamic Relational Data
 
 `proximal_gradient.R`: comparing method, proximal gradient descent for fused lasso 
 
-### New functions after 1st submission
-
 `change_point_WB_FFS`: implement the change point detection for dynamic networks after using FFS for denoising
 
 `mcmc_DN_adaptive`: MCMC algorithm for FFS
