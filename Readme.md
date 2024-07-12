@@ -18,8 +18,6 @@ Code for Factorized Fusion Shrinkage for Dynamic Relational Data
 
 `global_local_prior.R`: code for reproducing Fig. 10
 
-### New code for simulation after 1st submission
-
 `change_point_exmaple.R`: Example of simulation for change point detection
 
 `change_point.R`: code for reproducing Fig. 6
