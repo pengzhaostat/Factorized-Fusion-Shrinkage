@@ -33,7 +33,7 @@ trend_simu_algorithm_compare.R: code for reproducing Fig. 11
 
 # Files for functions, in the function folder
 
-MP_gibbs_network_sym_adaptive_cpp.cpp: core function, implement main VI algorithm for each block for dynamic networks.
+<mark> MP_gibbs_network_sym_adaptive_cpp.cpp: core function, implement main VI algorithm for each block for dynamic networks. <mark>
 
 MP_gibbs_multi_Sigma_adaptive.R: R version of core function, which could be slow, implement main VI algorithm for each block
 
