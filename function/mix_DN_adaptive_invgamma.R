@@ -20,7 +20,7 @@
 # iter: k-1
 # AUC: AUC for final variational mean
 
-mix_DN_adaptive_invgamma = function(Y,mean_beta_prior=0, sigma_beta_prior=sqrt(10),  gap = 0.01 ,min_iter=1 ,rho=1,alpha=0.95, trans_sd_init =0.1){
+mix_DN_adaptive_invgamma = function(Y, d=2, mean_beta_prior=0, sigma_beta_prior=sqrt(10),  gap = 0.01 ,min_iter=1 ,rho=1,alpha=0.95, trans_sd_init =0.1){
   
   
   
