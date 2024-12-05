@@ -1,5 +1,6 @@
 rm(list=ls())
 set.seed(2024)
+library(Rcpp)
 library(MASS)
 library(mvtnorm)
 library(igraph)
