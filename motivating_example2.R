@@ -7,12 +7,15 @@ library(DiagrammeR)
 library(pROC)
 library(Bessel)
 library(animation)
+library(Rcpp)
+library(RcppArmadillo)
 file_location = dirname(rstudioapi::getActiveDocumentContext()$path)
 setwd(paste(file_location,'/function',sep=""))
-source('MP_gibbs_multi_Sigma_adaptive.R')
-source('MP_gibbs_network_sym_adaptive.R')
+# source('MP_gibbs_multi_Sigma_adaptive.R')
+# source('MP_gibbs_network_sym_adaptive.R')
 source('mix_DN_adaptive_invgamma.R')
 source('helper.R')
+sourceCpp('MP_gibbs_network_sym_adaptive_cpp.cpp')
 setwd(file_location)
 
 # trend_generate = function(T,d,sigma_0,p){
@@ -90,25 +93,31 @@ for ( i in 3:n){
   
 }
 
-Y = vector("list", T)
+Y = array(0,dim=c(n,n,T))
 
 p_sparsity = rep(0,T)
 
+Ym = vector("list", T)
+
 for (t in 1:T){
-  Y[[t]] = positions_to_edges_binary(X,beta,sigma,t)
+  Y[,,t] = positions_to_edges_binary(X,beta,sigma,t)
   
-  p_sparsity[t] = sum(Y[[t]])/n^2
+  Ym[[t]] = Y[,,t]
+  
+  p_sparsity[t] = sum(Y[,,t])/n^2
 }
 
 
 
-MP_list = mix_DN_adaptive_invgamma (Y,mean_beta_prior=0, sigma_beta_prior=sqrt(10), gap =1e-3 )
+MP_list = mix_DN_adaptive_invgamma (Y = Ym,mean_beta_prior=0, sigma_beta_prior=sqrt(10), gap =1e-3 )
 
 
 
-MF_list = MP_binary_weighted_adaptive (Y, gap =1e-3, max_iter=200,global_prior='Cauthy')
+MF_list = MP_binary_weighted_adaptive (Y, gap =1e-3, max_iter=200)
 
-
+# Y_swapped <- aperm(Y, c(3, 2, 1))
+# 
+# list.dynsbm <- select.dynsbm(Y_swapped,Qmin=4,Qmax=4,edge.type="binary")
 
 pred_mean_MF = rep(T*(n-1)*n,0)
 pred_mean_MP = rep(T*(n-1)*n,0)
@@ -119,15 +128,14 @@ for (i in 1:n){
   for (j in 1:n){
     if ( j != i){
       for (t in 1:T){
-        pred_mean_MF[r] = 1/(1+exp(MF_list$mean_beta-t(MF_list$Mean_X[[i]][t,])%*% MF_list$Mean_X[[j]][t,]))
-        pred_mean_MP[r] = 1/(1+exp(MP_list$mean_beta-t(MP_list$Mean_X[[t]][i,])%*% MP_list$Mean_X[[t]][j,]))
-        res[r] = 1/(1+exp(-t(X[[i]][t,])%*% X[[j]][t,]))
+        pred_mean_MF[r] = 1/(1+exp(-MF_list$mean_beta-t(MF_list$Mean_X[i,,t])%*% MF_list$Mean_X[j,,t]))
+        pred_mean_MP[r] = 1/(1+exp(-MP_list$mean_beta-t(MP_list$Mean_X[[t]][i,])%*% MP_list$Mean_X[[t]][j,]))
+        res[r] = 1/(1+exp(-beta-t(X[[i]][t,])%*% X[[j]][t,]))
         r=r+1
       }
     }
   }
 }
-
 
 cor(res, pred_mean_MP,method = "pearson")
 cor(res, pred_mean_MF,method = "pearson")
@@ -148,7 +156,7 @@ Xm2 = vector("list", T)
 for(t in 1:T){
   Xm2 [[t]] =matrix(rep(0,n*d),nrow=n)
   for (i in 1:n){
-    Xm2 [[t]][i,] = MF_list$Mean_X[[i]][t,]
+    Xm2 [[t]][i,] = MF_list$Mean_X[i,,t]
   }
 }
 for ( t in 2:T){
@@ -156,20 +164,21 @@ for ( t in 2:T){
 }
 
 
+
 par(mfrow=c(2,3))
 par(mar=rep(3,4))
 
 
-plot_clus_igraph(Xm[[1]],Y[[1]],c(rep(2,2),rep(1,n-2)),1,1:n,v_shape='square')
+plot_clus_igraph(Xm[[1]],Ym[[1]],c(rep(2,2),rep(1,n-2)),1,1:n,v_shape='square')
 mtext('IGLSM', side=2)
-plot_clus_igraph(Xm[[75]],Y[[75]],c(rep(2,2),rep(1,n-2)),75,1:n,v_shape='square')
-plot_clus_igraph(Xm[[100]],Y[[100]],c(rep(2,2),rep(1,n-2)),100,1:n,v_shape='square')
+plot_clus_igraph(Xm[[75]],Ym[[75]],c(rep(2,2),rep(1,n-2)),75,1:n,v_shape='square')
+plot_clus_igraph(Xm[[100]],Ym[[100]],c(rep(2,2),rep(1,n-2)),100,1:n,v_shape='square')
 
 
-plot_clus_igraph(Xm2[[1]],Y[[1]],c(rep(2,2),rep(1,n-2)),1,1:n,v_shape='circle')
+plot_clus_igraph(Xm2[[1]],Ym[[1]],c(rep(2,2),rep(1,n-2)),1,1:n,v_shape='circle')
 mtext('FFS', side=2)
-plot_clus_igraph(Xm2[[75]],Y[[75]],c(rep(2,2),rep(1,n-2)),75,1:n,v_shape='circle')
-plot_clus_igraph(Xm2[[100]],Y[[100]],c(rep(2,2),rep(1,n-2)),100,1:n,v_shape='circle')
+plot_clus_igraph(Xm2[[75]],Ym[[75]],c(rep(2,2),rep(1,n-2)),75,1:n,v_shape='circle')
+plot_clus_igraph(Xm2[[100]],Ym[[100]],c(rep(2,2),rep(1,n-2)),100,1:n,v_shape='circle')
 
 
 Xt = vector("list", T)
