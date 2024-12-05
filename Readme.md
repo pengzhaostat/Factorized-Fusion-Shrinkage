@@ -35,6 +35,10 @@ trend_simu_algorithm_compare.R: code for reproducing Fig. 11
 
 <mark> MP_gibbs_network_sym_adaptive_cpp.cpp: core function, implement main VI algorithm for each block for dynamic networks. <mark>
 
+change_point_simu_function.R: simulation function for change point detection for replications
+
+cluster_simu_function.R:simulation function for cluster for replications 
+
 MP_gibbs_multi_Sigma_adaptive.R: R version of core function, which could be slow, implement main VI algorithm for each block
 
 MP_gibbs_Gaussnetwork_adaptive.R: R version of function, which could be slow, for the Gaussian matrix factorization case
